@@ -9,13 +9,14 @@ use crate::error::Error;
 use crate::jsonrpc::minreq_http::Builder;
 use corepc_types::{
     bitcoin::{
-        Block, BlockHash, Transaction, Txid, block::Header, consensus::deserialize, hex::FromHex,
+        block::Header, consensus::deserialize, hex::FromHex, Block, BlockHash, Transaction, Txid,
     },
     model::{GetBlockCount, GetBlockFilter, GetBlockVerboseOne, GetRawMempool},
 };
 use jsonrpc::{
-    Transport, serde,
+    serde,
     serde_json::{self, json},
+    Transport,
 };
 
 /// client authentication methods
