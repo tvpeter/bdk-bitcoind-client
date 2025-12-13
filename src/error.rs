@@ -2,13 +2,15 @@
 
 use std::{fmt, io, num::TryFromIntError};
 
-use corepc_types::{
-    bitcoin::{
-        consensus::{self, encode::FromHexError},
-        hex::{HexToArrayError, HexToBytesError},
-    },
-    v30::GetBlockVerboseOneError,
+use bitcoin::{
+    consensus::{self, encode::FromHexError},
+    hex::{HexToArrayError, HexToBytesError},
 };
+use corepc_types::bitcoin;
+#[cfg(feature = "28_0")]
+use corepc_types::v17::{GetBlockHeaderVerboseError, GetBlockVerboseOneError};
+#[cfg(not(feature = "28_0"))]
+use corepc_types::v30::{GetBlockHeaderVerboseError, GetBlockVerboseOneError};
 use jsonrpc::serde_json;
 
 /// Result type alias for the RPC client.
@@ -19,6 +21,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     /// Hex deserialization error
     DecodeHex(consensus::encode::FromHexError),
+
+    /// Error modeling [`GetBlockHeaderVerbose`](corepc_types::model::GetBlockHeaderVerbose).
+    GetBlockHeaderVerboseError(GetBlockHeaderVerboseError),
 
     /// Error converting `GetBlockVersboseOne` type into the model type
     GetBlockVerboseOneError(GetBlockVerboseOneError),
@@ -65,6 +70,7 @@ impl fmt::Display for Error {
             Error::Json(e) => write!(f, "JSON error: {e}"),
             Error::Io(e) => write!(f, "I/O error: {e}"),
             Error::DecodeHex(e) => write!(f, "Hex deserialization error: {e}"),
+            Error::GetBlockHeaderVerboseError(e) => write!(f, "{e}"),
             Error::GetBlockVerboseOneError(e) => {
                 write!(f, "Error converting getblockverboseone: {e}")
             }
